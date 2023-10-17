@@ -39,36 +39,30 @@ class AuthController extends Controller
     }
 
     public function handleRegister(Request $request) {
-        // Validate the form.
-        // Each field is required / Password and confirmation must match / Email address must be unique      
+        // Valideer het formulier.
+        // Elk veld is verplicht / Wachtwoord en confirmatie moeten overeen komen / Email adres moet uniek zijn
         $request->validate([
             'name' => 'required',
-            'email' => 'required|email|unique:users',
+            'email' => 'required|unique:users',
             'password' => 'required|confirmed'
         ]);
 
-        // Save a new user to the database with a secure password.
+        // Bewaar een nieuwe gebruiker in de databank met een beveiligd wachtwoord.
         $user = new User();
         $user->name = $request->name;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->save();
 
-        // BONUS: Send an email to the user stating that a new account has been registered for the user.
-
-        $user->notify(new UserRegisteredNotification);
-
-        Auth::login($user);
+        // BONUS: Verstuur een email naar de gebruiker waarin staat dat er een nieuwe account geregistreerd is voor de gebruiker.
 
         return redirect()->route('login');
     }
 
     public function logout() {
         // Gebruiker moet uitloggen
-
         Auth::logout();
 
-        return redirect()->route('login');
+        return back();
     }
-   
 }
